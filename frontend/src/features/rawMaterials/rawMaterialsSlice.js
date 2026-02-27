@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiGet, apiPost, apiDelete } from '../../services/api';
+import { apiGet, apiPost, apiDelete, apiPut } from '../../services/api';
 
 export const fetchRawMaterials = createAsyncThunk(
   'rawMaterials/fetchRawMaterials',
@@ -25,6 +25,14 @@ export const deleteRawMaterial = createAsyncThunk(
   }
 );
 
+export const updateRawMaterial = createAsyncThunk(
+  'rawMaterials/updateRawMaterial',
+  async ({ rawMaterialId, payload }) => {
+    const data = await apiPut(`/raw-materials/${rawMaterialId}`, payload);
+    return data;
+  }
+);
+
 const rawMaterialsSlice = createSlice({
   name: 'rawMaterials',
   initialState: {
@@ -35,7 +43,7 @@ const rawMaterialsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // fetch
+      // fetch isso aqui tambem cria uma função para buscar as materias primas e adicionar a lista de materias primas
       .addCase(fetchRawMaterials.pending, (state) => {
         state.status = 'loading';
         state.error = null;
@@ -49,7 +57,7 @@ const rawMaterialsSlice = createSlice({
         state.error = action.error.message || 'Failed to fetch raw materials';
       })
 
-      // create
+      // create / para criar  amateria prima e adicionar a lista de materias primas
       .addCase(createRawMaterial.pending, (state) => {
         state.error = null;
       })
@@ -60,7 +68,7 @@ const rawMaterialsSlice = createSlice({
         state.error = action.error.message || 'Failed to create raw material';
       })
 
-      // delete
+      // delete e aqui deleta uma materia prima e remove da lista de materias primas
       .addCase(deleteRawMaterial.pending, (state) => {
         state.error = null;
       })
@@ -69,8 +77,21 @@ const rawMaterialsSlice = createSlice({
       })
       .addCase(deleteRawMaterial.rejected, (state, action) => {
         state.error = action.error.message || 'Failed to delete raw material';
-      });
-  },
-});
+      })
+
+          .addCase(updateRawMaterial.pending, (state) => {
+      state.error = null;
+      })
+      .addCase(updateRawMaterial.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const idx = state.items.findIndex((rm) => Number(rm.id) === Number(updated.id));
+        if (idx !== -1) state.items[idx] = updated;
+      })
+      .addCase(updateRawMaterial.rejected, (state, action) => {
+        state.error = action.error.message || 'Failed to update raw material';
+      })
+        
+      },
+});  
 
 export default rawMaterialsSlice.reducer;

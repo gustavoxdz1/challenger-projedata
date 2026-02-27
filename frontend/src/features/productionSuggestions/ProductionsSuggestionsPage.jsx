@@ -9,33 +9,43 @@ export default function ProductionSuggestionsPage() {
   );
 
   useEffect(() => {
-    if (status === 'idle') {
-      dispatch(fetchProductionSuggestions());
-    }
+    if (status === 'idle') dispatch(fetchProductionSuggestions());
   }, [dispatch, status]);
 
-  if (status === 'loading') return <p>Loading production suggestions...</p>;
-  if (status === 'failed') return <p>Error: {error}</p>;
+  if (status === 'loading') return <p className="notice">Loading production suggestions...</p>;
+  if (status === 'failed') return <div className="error">Error: {error}</div>;
 
   return (
     <div>
-      <h2>Production Suggestions</h2>
-
       {suggestions.length === 0 ? (
-        <p>No producible products with current stock.</p>
+        <p className="notice">No producible products with current stock.</p>
       ) : (
         <>
-          <ul>
+          <ul className="list">
             {suggestions.map((s) => (
-              <li key={s.productId}>
-                <strong>{s.productCode}</strong> — {s.productName} — qty: {s.producibleQuantity} — unit: $
-                {String(s.unitValue)} — total: ${String(s.totalValue)}
+              <li className="item" key={s.productId}>
+                <div className="itemTop">
+                  <div className="itemMain">
+                    <span className="code">{s.productCode}</span>
+                    <span className="muted">—</span>
+                    <span>{s.productName}</span>
+                    <span className="muted">—</span>
+                    <span className="muted">qty:</span>
+                    <span>{s.producibleQuantity}</span>
+                    <span className="muted">—</span>
+                    <span className="muted">unit:</span>
+                    <span>${String(s.unitValue)}</span>
+                    <span className="muted">—</span>
+                    <span className="muted">total:</span>
+                    <span>${String(s.totalValue)}</span>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
 
-          <p>
-            <strong>Grand total:</strong> ${grandTotalValue.toLocaleString()}
+          <p className="notice">
+            <strong>Grand total:</strong> ${Number(grandTotalValue).toLocaleString()}
           </p>
         </>
       )}

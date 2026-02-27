@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts, createProduct, deleteProduct } from './productsSlice';
+import { fetchProducts, createProduct, deleteProduct, updateProduct } from './productsSlice';
+import ProductMaterials from './ProductMaterials';
 
 export default function ProductsPage() {
   const dispatch = useDispatch();
@@ -11,15 +12,11 @@ export default function ProductsPage() {
   const [value, setValue] = useState('');
 
   useEffect(() => {
-    if (status === 'idle') {
-      dispatch(fetchProducts());
-    }
+    if (status === 'idle') dispatch(fetchProducts());
   }, [dispatch, status]);
 
   async function handleCreate(e) {
     e.preventDefault();
-
-    // validação mínima
     if (!code.trim() || !name.trim() || value === '') return;
 
     await dispatch(
@@ -39,53 +36,81 @@ export default function ProductsPage() {
     await dispatch(deleteProduct(id));
   }
 
+  async function handleEdit(product) {
+    const newCode = prompt('New code:', product.code);
+    if (newCode === null) return;
+
+    const newName = prompt('New name:', product.name);
+    if (newName === null) return;
+
+    const newValue = prompt('New value:', String(product.value));
+    if (newValue === null) return;
+
+    await dispatch(
+      updateProduct({
+        productId: product.id,
+        payload: {
+          code: newCode.trim(),
+          name: newName.trim(),
+          value: Number(newValue),
+        },
+      })
+    );
+  }
+
   return (
     <div>
-      <h2>Products</h2>
-
-      <form onSubmit={handleCreate}>
-        <div>
-          <label>
-            Code:
-            <input value={code} onChange={(e) => setCode(e.target.value)} />
-          </label>
+      <form onSubmit={handleCreate} className="row">
+        <div className="field">
+          <label>Code</label>
+          <input value={code} onChange={(e) => setCode(e.target.value)} />
         </div>
 
-        <div>
-          <label>
-            Name:
-            <input value={name} onChange={(e) => setName(e.target.value)} />
-          </label>
+        <div className="field">
+          <label>Name</label>
+          <input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
-        <div>
-          <label>
-            Value:
-            <input
-              type="number"
-              step="0.01"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-            />
-          </label>
+        <div className="field" style={{ maxWidth: 220 }}>
+          <label>Value</label>
+          <input type="number" step="0.01" value={value} onChange={(e) => setValue(e.target.value)} />
         </div>
 
-        <button type="submit">Create</button>
+        <button className="btn btnPrimary" type="submit">
+          Create
+        </button>
       </form>
 
-      {status === 'loading' && <p>Loading products...</p>}
-      {error && <p>Error: {error}</p>}
-
-      {status === 'succeeded' && items.length === 0 && <p>No products found.</p>}
+      {status === 'loading' && <p className="notice">Loading products...</p>}
+      {error && <div className="error">Error: {error}</div>}
+      {status === 'succeeded' && items.length === 0 && <p className="notice">No products found.</p>}
 
       {items.length > 0 && (
-        <ul>
+        <ul className="list">
           {items.map((p) => (
-            <li key={p.id}>
-              <strong>{p.code}</strong> — {p.name} — ${String(p.value)}{' '}
-              <button type="button" onClick={() => handleDelete(p.id)}>
-                Delete
-              </button>
+            <li className="item" key={p.id}>
+              <div className="itemTop">
+                <div className="itemMain">
+                  <span className="code">{p.code}</span>
+                  <span className="muted">—</span>
+                  <span>{p.name}</span>
+                  <span className="muted">—</span>
+                  <span>${String(p.value)}</span>
+                </div>
+
+                <div className="actions">
+                  <button className="btn" type="button" onClick={() => handleEdit(p)}>
+                    Edit
+                  </button>
+                  <button className="btn btnDanger" type="button" onClick={() => handleDelete(p.id)}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              <div className="hr" />
+              <div className="smallTitle">Composition</div>
+              <ProductMaterials productId={p.id} />
             </li>
           ))}
         </ul>
