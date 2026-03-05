@@ -1,7 +1,7 @@
 # challenger-projedata
 ## Vídeo de demonstração
 - Google Drive: https://drive.google.com/file/d/1nkaIo9b8HO-lWpcBV1NPzs53LYAzaaem/view?usp=sharing
-
+- Aplicaçao funcionando no Deploy :https://challenger-projedata.vercel.app/
 # Inventory Production System
 
 Sistema WEB para controlar **produtos**, **matérias-primas (estoque)**, **composição do produto (BOM)** e gerar **sugestões de produção** com base no estoque disponível, priorizando produtos de **maior valor**.
