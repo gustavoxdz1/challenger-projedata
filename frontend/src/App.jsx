@@ -1,6 +1,6 @@
 import ProductsPage from './features/products/ProductsPage'
 import ProductionSuggestionsPage from './features/productionSuggestions/ProductionsSuggestionsPage';
-import RawMaterialsPage from './features/rawMaterials/rawMaterialspage';
+import RawMaterialsPage from './features/rawMaterials/RawMaterialsPage';
 
 export default function App() {
   return (
