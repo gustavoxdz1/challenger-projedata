@@ -1,0 +1,8 @@
+cat > .env <<'EOF'
+PORT=3001
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=inventory_db
+DB_USER=postgres
+DB_PASSWORD=gustavo13
+
